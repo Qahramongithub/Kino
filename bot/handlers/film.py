@@ -12,14 +12,19 @@ film_router=Router()
 async def film_handler(message: Message):
     file_id=message.video.file_id
     message_id=message.message_id
+    query=select(Kino.message_id).where(Kino.file_id==file_id)
+    file_url=session.execute(query).scalars().first()
     try:
-        if message_id and file_id:
-            query=insert(Kino).values(file_id=file_id,message_id=message_id)
-            session.execute(query)
-            session.commit()
-            await message.answer(f"🎬Kino kodi {message_id}")
+        if not file_url:
+            if message_id and file_id:
+                query = insert(Kino).values(file_id=file_id, message_id=message_id)
+                session.execute(query)
+                session.commit()
+                await message.answer(f"🎬Kino kodi {message_id}")
+            else:
+                await message.answer("Kino saqlanmadi !")
         else:
-            await message.answer("Kino saqlanmadi !")
+            await message.answer("Bunday kino mavjud !")
     except Exception as e:
         await message.answer("Bunday kino mavjud !")
 @film_router.message(F.text,F.text!="/reklama")
