@@ -24,3 +24,9 @@ def kod():
         KeyboardButton(text="Kod",web_app=WebAppInfo(url="https://www.instagram.com/begboyev.q"))
     ])
     return rkb.as_markup(resize_keyboard=True)
+def back_button():
+    rkb = ReplyKeyboardBuilder()
+    rkb.add(*[
+        KeyboardButton(text="")
+    ])
+    return rkb.as_markup(resize_keyboard=True)

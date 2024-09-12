@@ -1,6 +1,6 @@
 from aiogram.filters import CommandStart
 from aiogram.types import Message
-from aiogram import html,Router
+from aiogram import html, Router, types,Bot
 from sqlalchemy import select, insert
 
 from bot.button.button import kod
@@ -9,7 +9,7 @@ from db.modules import User, session
 start_router=Router()
 
 @start_router.message(CommandStart())
-async def command_start_handler(message: Message) -> None:
+async def command_start_handler(message: Message,bot:Bot) -> None:
     query=select(User.id).where(User.user_id==message.from_user.id)
     id=session.execute(query).scalars().first()
     if not id:
@@ -21,11 +21,10 @@ async def command_start_handler(message: Message) -> None:
         )
         session.execute(user)
         session.commit()
+    await bot.set_my_commands([
+        types.BotCommand(command='/start', description='Botni ishga tushiradi'),
+        types.BotCommand(command='/reklama', description='Botda reklama berish')
+    ])
 
     await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!")
     await message.answer(f"📽Kino kodini kiriting",reply_markup=kod())
-
-
-
-
-

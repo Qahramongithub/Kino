@@ -1,6 +1,8 @@
 from aiogram import Router,F
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from bot.handlers.click import PyState
 from db.modules import Kino,session
 from sqlalchemy import insert,select
 
@@ -20,8 +22,8 @@ async def film_handler(message: Message):
             await message.answer("Kino saqlanmadi !")
     except Exception as e:
         await message.answer("Bunday kino mavjud !")
-@film_router.message(F.text)
-async def film_handler(message: Message):
+@film_router.message(F.text,F.text!="/reklama")
+async def film_handler(message: Message,state:FSMContext):
     cod=message.text
     if cod.isdigit():
         query=select(Kino.file_id).where(Kino.message_id==int(cod))
@@ -31,3 +33,5 @@ async def film_handler(message: Message):
                                                               f"\n📥Yuklash kodi {cod}\n")
         else:
             await message.answer("Bunday film yuq !")
+    else:
+        await state.set_state(PyState.reklama)
